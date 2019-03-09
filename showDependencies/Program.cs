@@ -46,7 +46,42 @@ namespace showDependencies
             }
 
             GenerateFlatDependencies(filter);
+
+            Console.WriteLine("Flat dependencies:");
             PrintFlatDependecies();
+            Console.WriteLine(new String('-', 20));
+            Console.WriteLine("Tree dependencies:");
+            PrintTreeDependecies("", 0, filter);
+        }
+
+        private void PrintTreeDependecies(string key = "", int tabs = 0, string include = "")
+        {
+            if (tabs > 10)
+            {
+                Console.WriteLine("tabs > 10!!");
+                return;
+            }
+            if (key.Length > 0)
+            {
+                Console.WriteLine(new String('\t', tabs) + key);
+                if (dependecies.ContainsKey(key))
+                {
+                    List<string> deps = dependecies[key].Where(x => x.Contains(include)).ToList(); ;
+                    deps.Sort();
+                    foreach (string dep in deps)
+                    {
+                        PrintTreeDependecies(dep, tabs + 1, include);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in dependecies.OrderBy(x => x.Value.Count).ThenBy(n => n.Key))
+                {
+                    PrintTreeDependecies(item.Key, 0, include);
+                    Console.WriteLine();
+                }
+            }
         }
 
         private void GenerateFlatDependencies(string include = "")
