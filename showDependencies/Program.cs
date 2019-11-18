@@ -46,14 +46,34 @@ namespace showDependencies
             }
 
             GenerateFlatDependencies(filter);
+            PrintPackageswithVersions(filter);
 
-            Console.WriteLine("Flat dependencies:");
             PrintFlatDependecies();
             Console.WriteLine(new String('-', 20));
             Console.WriteLine("Tree dependencies:");
             PrintTreeDependecies("", 0, filter);
         }
-
+        private void PrintPackageswithVersions(string include = "")
+        {
+            Console.WriteLine("Found Packages:");
+            List<string> result = new List<string>();
+            foreach (IList<string> item in dependecies.Values)
+            {
+                foreach (string dep in item)
+                {
+                    if ((dep.Contains(include)) || (include.Length == 0))
+                    {
+                        result.Add(dep);
+                    }
+                }
+            }
+            
+            result.Sort();
+            foreach(string dep in result.Distinct().ToArray())
+            {
+                Console.WriteLine(dep);
+            }
+        }
         private void PrintTreeDependecies(string key = "", int tabs = 0, string include = "")
         {
             if (tabs > 10)
@@ -88,13 +108,13 @@ namespace showDependencies
         {
             foreach (var item in dependecies)
             {
-                List<string> flatDeps = DependenyArray(item.Key).Where(x => x.Contains(include)).ToList();
+                List<string> flatDeps = DependencyArray(item.Key).Where(x => x.Contains(include)).ToList();
                 flatDeps.Sort();
                 flatDependecies.Add(item.Key, flatDeps);
             }
         }
 
-        private List<string> DependenyArray(string key)
+        private List<string> DependencyArray(string key)
         {
             List<string> result = new List<string>();
             if (dependecies.ContainsKey(key))
@@ -102,7 +122,7 @@ namespace showDependencies
                 foreach (string dep in dependecies[key])
                 {
                     result.Add(dep);
-                    result = result.Union(DependenyArray(dep), StringComparer.InvariantCultureIgnoreCase).ToList();
+                    result = result.Union(DependencyArray(dep), StringComparer.InvariantCultureIgnoreCase).ToList();
                 }
             }
             return result;
@@ -111,6 +131,7 @@ namespace showDependencies
 
         private void PrintFlatDependecies()
         {
+            Console.WriteLine("Flat dependencies:");
             foreach (var item in flatDependecies.OrderBy(x => x.Value.Count).ThenBy(n => n.Key))
             {
                 Console.WriteLine($"{item.Key} : {item.Value.Count}");
@@ -136,9 +157,17 @@ namespace showDependencies
                             case "reference":
                             case "packagereference":
                                 string include = pReader["Include"];
+                                string version = pReader["Version"];
                                 if (include != null)
                                 {
-                                    AddDependency(pName, include);
+                                    if (version != null)
+                                    {
+                                        AddDependency(pName, include + '_' + version);
+                                    }
+                                    else
+                                    {
+                                        AddDependency(pName, include);
+                                    }
                                 }
                                 break;
                         }
