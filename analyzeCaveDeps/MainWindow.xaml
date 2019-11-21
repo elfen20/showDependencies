@@ -18,6 +18,7 @@
         </Grid.RowDefinitions>
         <TextBox x:Name="TBaseDir" TextWrapping="Wrap" Text="C:\" Grid.Column="0" Grid.ColumnSpan="2" Height="20" Margin="10,10,95,10"/>
         <Button x:Name="BAnalyze" Content="Analyze" HorizontalAlignment="Right" Margin="10,10,10,10" Width="75" Height="20" Grid.Column="1" Click="BAnalyze_Click"/>
-        <ListBox x:Name="LBProjects" Grid.Row="1"/>
+        <ListBox x:Name="LBProjects" Grid.Row="1" SelectionChanged="LBProjects_Selected"/>
+        <ListBox x:Name="LBDpendsOn" Grid.Row="1" Grid.Column="1"/>
     </Grid>
 </Window>

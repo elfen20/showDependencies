@@ -25,6 +25,7 @@ namespace analyzeCaveDeps
         public MainWindow()
         {
             InitializeComponent();
+            TBaseDir.Text = @"c:\";
         }
 
         private void BAnalyze_Click(object sender, RoutedEventArgs e)
@@ -40,6 +41,16 @@ namespace analyzeCaveDeps
             {
                 LBProjects.Items.Add(project);
             }            
+        }
+
+        private void LBProjects_Selected(object sender, RoutedEventArgs e)
+        {
+            LBDpendsOn.Items.Clear();
+            string pName = LBProjects.SelectedItem.ToString();
+            foreach (var dep in depAnalyzer.Projects[pName].dependsOn)
+            {
+                LBDpendsOn.Items.Add(dep);
+            }
         }
     }
 }
